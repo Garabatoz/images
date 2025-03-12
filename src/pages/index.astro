@@ -1,11 +1,113 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Gallery from '../components/Gallery.astro';
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Galería de Arte Aleatoria">
+	<main class="min-h-screen bg-gray-100">
+		<h1 class="text-4xl font-bold text-center py-8 text-gray-800 text-shadow-lg drop-shadow-lg shadow-lg bg-white rounded-lg p-4">
+			<span>Galería de </span>
+			<span> Arte</span>
+			<span id="animatedText" class="inline-block hover:animate-[spin_0.5s_linear_infinite] hover:text-blue-600 transition-all duration-300 cursor-default">
+				Aleatoria
+			</span>
+			<style>
+				@keyframes wiggle {
+					0%, 100% { transform: rotate(-3deg); }
+					50% { transform: rotate(3deg); }
+				}
+				@keyframes bounce {
+					0%, 100% { transform: translateY(0); }
+					50% { transform: translateY(-10px); }
+				}
+				@keyframes pulse {
+					0%, 100% { transform: scale(1); }
+					50% { transform: scale(1.1); }
+				}
+				@keyframes shake {
+					0%, 100% { transform: translateX(0); }
+					25% { transform: translateX(-5px); }
+					75% { transform: translateX(5px); }
+				}
+				@keyframes flip {
+					0% { transform: perspective(400px) rotateY(0); }
+					100% { transform: perspective(400px) rotateY(360deg); }
+				}
+				@keyframes swing {
+					20% { transform: rotate(15deg); }
+					40% { transform: rotate(-10deg); }
+					60% { transform: rotate(5deg); }
+					80% { transform: rotate(-5deg); }
+					100% { transform: rotate(0deg); }
+				}
+				@keyframes float {
+					0%, 100% { transform: translateY(0) rotate(0); }
+					50% { transform: translateY(-10px) rotate(5deg); }
+				}
+				@keyframes jello {
+					11.1% { transform: none; }
+					22.2% { transform: skewX(-12.5deg) skewY(-12.5deg); }
+					33.3% { transform: skewX(6.25deg) skewY(6.25deg); }
+					44.4% { transform: skewX(-3.125deg) skewY(-3.125deg); }
+					55.5% { transform: skewX(1.5625deg) skewY(1.5625deg); }
+					66.6% { transform: skewX(-0.78125deg) skewY(-0.78125deg); }
+					77.7% { transform: skewX(0.390625deg) skewY(0.390625deg); }
+					88.8% { transform: skewX(-0.1953125deg) skewY(-0.1953125deg); }
+					100% { transform: none; }
+				}
+				@keyframes rubber {
+					0% { transform: scale3d(1, 1, 1); }
+					30% { transform: scale3d(1.25, 0.75, 1); }
+					40% { transform: scale3d(0.75, 1.25, 1); }
+					50% { transform: scale3d(1.15, 0.85, 1); }
+					65% { transform: scale3d(0.95, 1.05, 1); }
+					75% { transform: scale3d(1.05, 0.95, 1); }
+					100% { transform: scale3d(1, 1, 1); }
+				}
+				@keyframes glitch {
+					0% { transform: translate(0); }
+					20% { transform: translate(-2px, 2px); }
+					40% { transform: translate(-2px, -2px); }
+					60% { transform: translate(2px, 2px); }
+					80% { transform: translate(2px, -2px); }
+					100% { transform: translate(0); }
+				}
+			</style>
+			<script>
+				const animations = [
+					'animate-[wiggle_1s_ease-in-out_infinite]',
+					'animate-[bounce_1s_ease-in-out_infinite]',
+					'animate-[pulse_1s_ease-in-out_infinite]',
+					'animate-[shake_1s_ease-in-out_infinite]',
+					'animate-[flip_2s_ease-in-out_infinite]',
+					'animate-[swing_1s_ease-in-out_infinite]',
+					'animate-[float_3s_ease-in-out_infinite]',
+					'animate-[jello_2s_ease-in-out_infinite]',
+					'animate-[rubber_2s_ease-in-out_infinite]',
+					'animate-[glitch_0.5s_ease-in-out_infinite]'
+				];
+				
+				window.addEventListener('load', () => {
+					const text = document.getElementById('animatedText');
+					if (!text) return;
+					const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+					text.classList.add(randomAnimation);
+
+					let hoverTimer: number;
+					
+					text.addEventListener('mouseenter', () => {
+						hoverTimer = setTimeout(() => {
+							alert('¡Cálmate! Tómate la situación con más seriedad 😅');
+							text.classList.remove(...animations);
+						}, 10000);
+					});
+
+					text.addEventListener('mouseleave', () => {
+						clearTimeout(hoverTimer);
+					});
+				});
+			</script>
+		</h1>
+		<Gallery />
+	</main>
 </Layout>

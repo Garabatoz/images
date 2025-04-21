@@ -1,48 +1,63 @@
 ---
-// En lugar de usar Astro.glob, vamos a simular algunas imágenes de prueba
-const imageUrls = [
-  'https://picsum.photos/800/600',
-  'https://source.unsplash.com/random/800x600',
-  'https://placeimg.com/800/600/any',
-  'https://loremflickr.com/800/600',
-  'https://picsum.photos/800/600?random=1',
-  'https://picsum.photos/800/600?random=2', 
-  'https://picsum.photos/800/600?random=3',
-  'https://picsum.photos/800/600?random=4',
-  'https://picsum.photos/800/600?random=5',
-  'https://source.unsplash.com/random/800x600?sig=1',
-  'https://source.unsplash.com/random/800x600?sig=2',
-  'https://source.unsplash.com/random/800x600?sig=3',
-  'https://source.unsplash.com/random/800x600?sig=4',
+import { Image } from 'astro:assets';
+import image1 from '../assets/images/1.jpg';
+import image2 from '../assets/images/2.jpg';
+import image3 from '../assets/images/3.jpg';
+import image4 from '../assets/images/4.jpg';
+import image5 from '../assets/images/5.jpg';
+import image6 from '../assets/images/6.jpg';
+import image7 from '../assets/images/7.jpg';
+import image8 from '../assets/images/8.jpg';
+import image9 from '../assets/images/9.jpg';
+import image10 from '../assets/images/10.jpg';
+
+
+const images = [
+  { src: image1, ratio: image1.width / image1.height },
+  { src: image2, ratio: image2.width / image2.height },
+  { src: image3, ratio: image3.width / image3.height },
+  { src: image4, ratio: image4.width / image4.height },
+  { src: image5, ratio: image5.width / image5.height },
+  { src: image6, ratio: image6.width / image6.height },
+  { src: image7, ratio: image7.width / image7.height },
+  { src: image8, ratio: image8.width / image8.height },
+  { src: image9, ratio: image9.width / image9.height },
+  { src: image10, ratio: image10.width / image10.height },
 ];
 
-// Función para obtener dimensiones aleatorias
-function getRandomDimensions() {
-  const dimensions = [
-    { cols: 'col-span-1', rows: 'row-span-1' },  // Pequeña
-    { cols: 'col-span-2', rows: 'row-span-1' },  // Mediana horizontal
-    { cols: 'col-span-1', rows: 'row-span-2' },  // Mediana vertical
-    { cols: 'col-span-2', rows: 'row-span-2' },  // Grande
-    { cols: 'col-span-3', rows: 'row-span-2' },  //   
-    { cols: 'col-span-1', rows: 'row-span-3' },  // Grande
-    { cols: 'col-span-2', rows: 'row-span-3' },  // Grande
-    { cols: 'col-span-3', rows: 'row-span-3' },  // Grande
-  ];
-  
-  // Aseguramos que no se repitan demasiadas imágenes grandes
-  const randomIndex = Math.floor(Math.random() * dimensions.length);
-  return dimensions[randomIndex];
+// Función para determinar dimensiones basadas en la relación de aspecto
+function getDimensionsFromRatio(ratio: number) {
+    // Imágenes horizontales (más anchas que altas)
+  if (ratio > 1.5) {
+    return { cols: 'col-span-2', rows: 'row-span-1' };  // Panorámica horizontal
+  } 
+  // Imágenes verticales (más altas que anchas)
+  else if (ratio < 0.7) {
+    return { cols: 'col-span-1', rows: 'row-span-2' };  // Vertical alargada
+  }
+  // Imágenes cuadradas o casi cuadradas
+  else if (ratio >= 0.9 && ratio <= 1.1) {
+    return { cols: 'col-span-1', rows: 'row-span-1' };  // Cuadrada
+  }
+  // Imágenes muy grandes (opcional, para destacar ciertas imágenes)
+  else if (Math.random() > 0.8) { // 20% de probabilidad para imágenes destacadas
+    return { cols: 'col-span-2', rows: 'row-span-2' };  // Grande
+  }
+  // Para el resto de imágenes, asignar tamaño basado en ratio
+  else {
+    return { cols: 'col-span-1', rows: 'row-span-1' };  // Tamaño predeterminado
+  }
 }
 
 // Mezclar el array de imágenes
-const shuffledImages = [...imageUrls].sort(() => Math.random() - 0.5);
+const shuffledImages = [...images].sort(() => Math.random() - 0.5);
 ---
 
-<div class="min-h-screen w-full bg-white">
+<div class="w-full bg-white">
   <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[20vh] gap-3 p-3">
     {
-      shuffledImages.map((imageUrl) => {
-        const { cols, rows } = getRandomDimensions();
+      shuffledImages.map((image) => {
+        const { cols, rows } = getDimensionsFromRatio(image.ratio);
         return (
           <div class={`
             ${cols} ${rows}
@@ -51,13 +66,14 @@ const shuffledImages = [...imageUrls].sort(() => Math.random() - 0.5);
             relative group shadow-sm hover:shadow-xl
             cursor-pointer
           `}
-          data-image={imageUrl}
+          data-image={image.src.src}
           >
-            <img
-              src={imageUrl}
+            <Image
+              src={image.src}
               alt="Galería de arte"
               class="w-full h-full object-cover"
-              loading="lazy"
+              width={image.src.width}
+              height={image.src.height}
             />
             <div class="
               absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10

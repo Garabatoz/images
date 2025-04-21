@@ -6,11 +6,10 @@ import Gallery from '../components/Gallery.astro';
 <Layout title="Galería de Arte Aleatoria">
 	<main class="min-h-screen bg-gray-100">
 		<h1 class="text-4xl font-bold text-center py-8 text-gray-800 text-shadow-lg drop-shadow-lg shadow-lg bg-white rounded-lg p-4">
-			<span>Galería de </span>
-			<span> Arte</span>
 			<span id="animatedText" class="inline-block hover:animate-[spin_0.5s_linear_infinite] hover:text-blue-600 transition-all duration-300 cursor-default">
-				Aleatoria
+				Random
 			</span>
+			<span>art gallery</span>
 			<style>
 				@keyframes wiggle {
 					0%, 100% { transform: rotate(-3deg); }
@@ -97,7 +96,7 @@ import Gallery from '../components/Gallery.astro';
 					
 					text.addEventListener('mouseenter', () => {
 						hoverTimer = setTimeout(() => {
-							alert('¡Cálmate! Tómate la situación con más seriedad 😅');
+							alert('Calm down! Take the situation more seriously 😅');
 							text.classList.remove(...animations);
 						}, 10000);
 					});

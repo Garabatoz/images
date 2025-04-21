@@ -43,6 +43,27 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## 🔄 Exposing your local server to the internet
+
+To make your local development server accessible over the internet (useful for testing on other devices or sharing a preview with others), you can use Serveo:
+
+```sh
+ssh -R 80:localhost:8000 serveo.net
+```
+
+This command creates a secure tunnel that forwards traffic from a public Serveo URL to your local development server:
+
+- `-R 80:localhost:8000`: Creates a remote port forwarding where traffic to port 80 on the Serveo server is forwarded to localhost:8000 on your machine
+- `serveo.net`: The Serveo service which provides the public URL
+
+**Note**: If you're running Astro on a different port (default is 4321), replace `8000` with your actual port number:
+
+```sh
+ssh -R 80:localhost:4321 serveo.net
+```
+
+When you run this command, Serveo will provide a public URL that you can share with others to access your local development server.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

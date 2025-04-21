@@ -11,7 +11,6 @@ import image8 from '../assets/images/8.jpg';
 import image9 from '../assets/images/9.jpg';
 import image10 from '../assets/images/10.jpg';
 
-
 const images = [
   { src: image1, ratio: image1.width / image1.height },
   { src: image2, ratio: image2.width / image2.height },
@@ -24,64 +23,28 @@ const images = [
   { src: image9, ratio: image9.width / image9.height },
   { src: image10, ratio: image10.width / image10.height },
 ];
-
-// Función para determinar dimensiones basadas en la relación de aspecto
-function getDimensionsFromRatio(ratio: number) {
-    // Imágenes horizontales (más anchas que altas)
-  if (ratio > 1.5) {
-    return { cols: 'col-span-2', rows: 'row-span-1' };  // Panorámica horizontal
-  } 
-  // Imágenes verticales (más altas que anchas)
-  else if (ratio < 0.7) {
-    return { cols: 'col-span-1', rows: 'row-span-2' };  // Vertical alargada
-  }
-  // Imágenes cuadradas o casi cuadradas
-  else if (ratio >= 0.9 && ratio <= 1.1) {
-    return { cols: 'col-span-1', rows: 'row-span-1' };  // Cuadrada
-  }
-  // Imágenes muy grandes (opcional, para destacar ciertas imágenes)
-  else if (Math.random() > 0.8) { // 20% de probabilidad para imágenes destacadas
-    return { cols: 'col-span-2', rows: 'row-span-2' };  // Grande
-  }
-  // Para el resto de imágenes, asignar tamaño basado en ratio
-  else {
-    return { cols: 'col-span-1', rows: 'row-span-1' };  // Tamaño predeterminado
-  }
-}
-
-// Mezclar el array de imágenes
-const shuffledImages = [...images].sort(() => Math.random() - 0.5);
 ---
 
 <div class="w-full bg-white">
-  <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[20vh] gap-3 p-3">
+  <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-4 auto-rows-[20vh] gap-3 p-3">
     {
-      shuffledImages.map((image) => {
-        const { cols, rows } = getDimensionsFromRatio(image.ratio);
-        return (
-          <div class={`
-            ${cols} ${rows}
-            overflow-hidden rounded-lg
-            transition-all duration-300 hover:scale-[1.02] hover:z-10
-            relative group shadow-sm hover:shadow-xl
-            cursor-pointer
-          `}
+      images.map((image, index) => (
+        <div
+          class="gallery-item overflow-hidden rounded-lg transition-all duration-300 hover:scale-[1.02] hover:z-10 relative group shadow-sm hover:shadow-xl cursor-pointer"
           data-image={image.src.src}
-          >
-            <Image
-              src={image.src}
-              alt="Galería de arte"
-              class="w-full h-full object-cover"
-              width={image.src.width}
-              height={image.src.height}
-            />
-            <div class="
-              absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10
-              transition-all duration-300
-            "/>
-          </div>
-        );
-      })
+          data-ratio={image.ratio}
+          data-index={index}
+        >
+          <Image
+            src={image.src}
+            alt="Galería de arte"
+            class="w-full h-full object-cover"
+            width={image.src.width}
+            height={image.src.height}
+          />
+          <div class="absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"/>
+        </div>
+      ))
     }
   </div>
 </div>
@@ -106,11 +69,49 @@ const shuffledImages = [...images].sort(() => Math.random() - 0.5);
 </div>
 
 <script>
+  // Función para determinar dimensiones basadas en la relación de aspecto
+  function getDimensionsFromRatio(ratio: number) {
+    // Imágenes horizontales (más anchas que altas)
+    if (ratio > 1.5) {
+      return { cols: 'col-span-2', rows: 'row-span-1' };  // Panorámica horizontal
+    } 
+    // Imágenes verticales (más altas que anchas)
+    else if (ratio < 0.7) {
+      return { cols: 'col-span-1', rows: 'row-span-2' };  // Vertical alargada
+    }
+    // Imágenes cuadradas o casi cuadradas
+    else if (ratio >= 0.9 && ratio <= 1.1) {
+      return { cols: 'col-span-1', rows: 'row-span-1' };  // Cuadrada
+    }
+    // Imágenes muy grandes (opcional, para destacar ciertas imágenes)
+    else if (Math.random() > 0.8) { // 20% de probabilidad para imágenes destacadas
+      return { cols: 'col-span-2', rows: 'row-span-2' };  // Grande
+    }
+    // Para el resto de imágenes, asignar tamaño basado en ratio
+    else {
+      return { cols: 'col-span-1', rows: 'row-span-1' };  // Tamaño predeterminado
+    }
+  }
+  
   // Esperar a que el DOM esté completamente cargado
   document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage') as HTMLImageElement;
     const closeBtn = document.getElementById('closeModalBtn');
+    const galleryGrid = document.getElementById('gallery-grid');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    // Reorganizar las imágenes aleatoriamente
+    const items = Array.from(galleryItems);
+    items.sort(() => Math.random() - 0.5);
+    
+    // Aplicar dimensiones aleatorias basadas en la relación de aspecto
+    items.forEach(item => {
+      const ratio = parseFloat(item.getAttribute('data-ratio') || "1");
+      const { cols, rows } = getDimensionsFromRatio(ratio);
+      item.classList.add(cols, rows);
+      galleryGrid?.appendChild(item); // Reinserta el elemento en orden aleatorio
+    });
 
     // Agregar listeners a todas las imágenes de la galería
     document.querySelectorAll('[data-image]').forEach(imageDiv => {
@@ -137,15 +138,13 @@ const shuffledImages = [...images].sort(() => Math.random() - 0.5);
       if (e.key === 'Escape' && modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
-        console.log('Cerrando modal con la tecla Escape');
       }
     });
 
     // Cerrar modal al hacer clic fuera de la imagen
     modal?.addEventListener('click', (e) => {
       // Si el clic fue directamente en el modal (fondo) y no en la imagen
-      if (e.target === modal || (e.target as Element).classList.contains('relative')) {
-        console.log(e);
+      if (e.target === modal || (e.target instanceof Element && e.target.classList.contains('relative'))) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
       }
